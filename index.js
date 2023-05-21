@@ -31,7 +31,7 @@ async function run() {
     await client.connect();
     const ToysCollection = client.db("ToysVendor").collection('allToys');
 
-
+    // add toy in db
     app.post('/alltoys', async(req,res) => {
         const toys = req.body;
         console.log(toys);
@@ -39,6 +39,11 @@ async function run() {
         res.send(result);
     })
 
+    // get toy from db
+    app.get('/alltoys', async(req,res) => {
+        const result = await ToysCollection.find().toArray();
+        res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
