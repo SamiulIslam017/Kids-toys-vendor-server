@@ -41,7 +41,6 @@ async function run() {
 
     // find toys by user email 
     app.get('/alltoys', async(req, res) =>{
-        console.log(req.query.email);
         let query = {}
         if (req.query?.email) {
             query = {email: req.query.email}
@@ -49,8 +48,39 @@ async function run() {
         const result = await toysCollection.find(query).toArray();
         res.send(result);
     })
+    // Category wise product search
+    // app.get('/alltoys', async(req,res) => {
+    //     console.log(req.query.subCategory);
+    //     const result = await toysCollection.find().toArray();
+    //     res.send(result)
+        
+    // })
 
+    // update toys
+    app.get('/alltoys/:id', async(req,res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id)}
+        const result = await toysCollection.findOne(query);
+        res.send(result)
+        
+    })
 
+    app.patch('/alltoys/:id', async(req,res) => {
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const updatedToys = req.body;
+
+        const updated = {
+            $set: {
+                price: updatedToys.price,
+                qty: updatedToys.qty,
+                description: updatedToys.description
+            }
+        }
+
+        const result = await toysCollection.updateOne(filter, updated);
+        res.send(result)
+    })
     // delete Toys 
 
     app.delete('/alltoys/:id', async(req,res) => {
