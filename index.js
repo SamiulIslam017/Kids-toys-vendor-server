@@ -30,7 +30,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const toysCollection = client.db("ToysVendor").collection('allToys');
-
+    // 
+    app.get('/alltoys', async(req,res) => {
+      const result = await toysCollection.find().toArray();
+      res.send(result);
+    })
     // add toy in db
     app.post('/alltoys', async(req,res) => {
         const toys = req.body;
