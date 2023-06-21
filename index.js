@@ -23,21 +23,25 @@ const client = new MongoClient(uri, {
   },
 });
 
-const verifyJwt = (req,res,next) => {
-  console.log('object jwt');
+const verifyJwt = (req, res, next) => {
+  console.log("object jwt");
   const authorization = req.header.authorization;
   if (!authorization) {
-    return res.status(401).send({error:true, message:"unauthorized access"})
+    return res
+      .status(401)
+      .send({ error: true, message: "unauthorized access" });
   }
-  const token = authorization.split(' ')[1];
+  const token = authorization.split(" ")[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-    if(error){
-     return res.status(403).send({error:true, message:"unauthorized access"})
+    if (error) {
+      return res
+        .status(403)
+        .send({ error: true, message: "unauthorized access" });
     }
     req.decoded = decoded;
     next();
-  })
-}
+  });
+};
 
 async function run() {
   try {
@@ -52,7 +56,7 @@ async function run() {
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
       });
-      res.send({token});
+      res.send({ token });
     });
     // find all product
     app.get("/alltoys", async (req, res) => {
@@ -88,15 +92,8 @@ async function run() {
     });
 
     // find toys by user email
-    app.get("/alltoys", verifyJwt, async (req, res) => {
-      const decoded = req.decoded;
-      if (decoded.email !== req.query.email) {
-        return res.status(403).send({error:true, message:"Forbidden access"})
-      }
-      let query = {};
-      if (req.query?.email) {
-        query = { email: req.query.email };
-      }
+    app.get("/alltoys/singleUser", async (req, res) => {
+      query = { email: req.query?.email };
       const result = await toysCollection.find(query).toArray();
       res.send(result);
     });
